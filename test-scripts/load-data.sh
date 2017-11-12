@@ -1,0 +1,1 @@
+aws kinesis put-record --stream-name test --partition-key `uuidgen` --data 'Data=some data'

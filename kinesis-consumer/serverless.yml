@@ -45,9 +45,22 @@ resources:
               Action:
                 - dynamodb:PutItem
               Resource: 'arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:provider.environment.kinesisConsumerTable}-${self:provider.stage}'
+            - Effect: Allow
+              Action:
+                - kinesis:GetRecords
+                - kinesis:GetShardIterator
+                - kinesis:DescribeStream,
+                - kinesis:ListStreams
+              Resource: 'arn:aws:kinesis:${self:provider.region}:#{AWS::AccountId}:stream/${self:provider.environment.kinesisStreamName}'
         Roles:
           - Ref: IamRoleLambdaExecution
 
 functions:
   consume:
     handler: consumer.consume
+    events:
+      - stream:
+          arn: 'arn:aws:kinesis:${self:provider.region}:#{AWS::AccountId}:stream/${self:provider.environment.kinesisStreamName}'
+          batchSize: 100
+          startingPosition: LATEST
+          enabled: true
