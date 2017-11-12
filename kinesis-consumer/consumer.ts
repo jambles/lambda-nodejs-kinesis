@@ -1,17 +1,14 @@
 import * as  AWS from 'aws-sdk';
 
-const tableName = "sampleTable";
+const consumerTable = `${process.env.kinesisConsumerTable}-${process.env.ENV}`;
 const db = new AWS.DynamoDB.DocumentClient();
 
 export function consume(event: IEventPayload, context: {}, callback: IConsumerCallback) {
     event.Records.forEach((record) => {
 
         const payload = new Buffer(record.kinesis.data, 'base64').toString('ascii');
-        console.log('Decoded payload:', payload);
-
-        const item = {"payload": payload};
-
-        const params = {TableName: tableName, Item: item};
+        const item = {eventID: record.eventID, payload: payload};
+        const params = {TableName: consumerTable, Item: item};
 
         db.put(params, function (err, data) {
             if (err) console.log(err);
@@ -19,6 +16,7 @@ export function consume(event: IEventPayload, context: {}, callback: IConsumerCa
         });
 
     });
+    callback(null, `Successfully processed ${event.Records.length} records.`);
     callback(null, `Successfully processed ${event.Records.length} records.`);
 }
 

@@ -9,11 +9,44 @@ provider:
   name: aws
   runtime: nodejs6.10
   stage: ${opt:stage, self:custom.defaultStage}
-  region: ap-southeast-2
+  region: ${self:provider.environment.awsRegion}
   environment: ${file(../env.yml)}
 
 plugins:
   - serverless-webpack
+  - serverless-pseudo-parameters
+
+resources:
+  Resources:
+    genericHistoryTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.kinesisConsumerTable}-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: eventID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: eventID
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    DynamoDBIamPolicy:
+      Type: AWS::IAM::Policy
+      DependsOn:
+        - genericHistoryTable
+      Properties:
+        PolicyName: lambda-${self:service}-${self:provider.stage}-dynamodb
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: 'arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:provider.environment.kinesisConsumerTable}-${self:provider.stage}'
+        Roles:
+          - Ref: IamRoleLambdaExecution
 
 functions:
   consume:
