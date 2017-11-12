@@ -7,7 +7,7 @@ const dynamo = new DynamoHelper(consumerTable);
 export async function consume(event: IEventPayload, context: {}, callback: IConsumerCallback) {
     await event.Records.forEach((record) => {
         const payload = new Buffer(record.kinesis.data, 'base64').toString('ascii');
-        return saveItem(new KinesisRecord(record.event, payload))
+        return saveItem(new KinesisRecordEntity(record.eventID, payload))
             .catch(reason => {
                 console.error("persisting record failed", reason);
             });
@@ -15,7 +15,7 @@ export async function consume(event: IEventPayload, context: {}, callback: ICons
     callback(null, `Successfully processed ${event.Records.length} records.`);
 }
 
-export function saveItem(item: KinesisRecord) {
+export function saveItem(item: KinesisRecordEntity) {
     const params = {
         Item: {
             eventID: item.eventID,
@@ -26,7 +26,7 @@ export function saveItem(item: KinesisRecord) {
     return dynamo.action('put', params);
 }
 
-export class KinesisRecord {
+export class KinesisRecordEntity {
     eventID: string;
     payload: string;
 

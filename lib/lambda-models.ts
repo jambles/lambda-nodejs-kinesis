@@ -1,4 +1,6 @@
+import {KinesisRecord} from './kinesis-record';
+
 export type IConsumerCallback = (error: {}, result: {}) => void;
 export type IEventPayload = {
-    Records: any;
+    Records: Array<KinesisRecord>;
 }
