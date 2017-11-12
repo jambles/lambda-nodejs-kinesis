@@ -1,31 +1,40 @@
 import * as AWS from 'aws-sdk';
+import {DocumentClient} from 'aws-sdk/lib/dynamodb/document_client';
 
 AWS.config.region = process.env.awsRegion;
 
 export class DynamoHelper {
-  private tableName: string;
+    private tableName: string;
+    private initialised: boolean = false;
+    private dynamoDb: DocumentClient;
 
-  constructor(tableName: string) {
-    this.tableName = tableName;
-  }
+    constructor(tableName: string) {
+        this.tableName = tableName;
+        this.dynamoDb = this.init();
+    }
 
-  public action(action: string, params: {}) : Promise<any>{
-    const dynamoDb = this.init();
+    public action(action: string, params: {}): Promise<any> {
 
-    console.log(`Dynamo: executing [${action}] with params:`);
-    console.log(params);
+        console.log(`Dynamo: executing [${action}] with params:`, params);
 
-    return dynamoDb[action](params).promise();
-  }
+        return this.dynamoDb[action](params).promise();
+    }
 
-  private init() {
-    console.log(`Dynamo: initialising [${this.tableName}]`);
+    private init() {
+        if (this.initialised) {
+            return;
+        }
 
-    return new AWS.DynamoDB.DocumentClient({
-      params: {
-        region: process.env.awsRegion,
-        TableName: this.tableName
-      }
-    });
-  }
+        console.log(`Dynamo: initialising [${this.tableName}]`);
+
+        let documentClient = new AWS.DynamoDB.DocumentClient({
+            params: {
+                region: process.env.awsRegion,
+                TableName: this.tableName
+            }
+        });
+
+        this.initialised = true;
+        return documentClient;
+    }
 }
