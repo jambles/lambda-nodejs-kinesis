@@ -1,0 +1,11 @@
+{
+  "name": "kinesis-consumer",
+  "version": "1.0.0",
+  "description": "consumes kinesis streams",
+  "main": "consumer.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jambles/lambda-nodejs-kinesis.git"
+  },
+  "dependencies": {}
+}

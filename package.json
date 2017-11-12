@@ -1,0 +1,31 @@
+{
+  "name": "lambda-nodejs-kinesis",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jambles/lambda-nodejs-kinesis.git"
+  },
+  "engines": {
+    "node": "6.10.0"
+  },
+  "dependencies": {
+    "promisepay": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^7.0.46",
+    "@types/uglify-js": "^2.6.29",
+    "@types/webpack": "^3.0.14",
+    "awesome-typescript-loader": "^3.3.0",
+    "aws-sdk": "^2.149.0",
+    "dotenv-webpack": "^1.5.4",
+    "dynamodb-doc": "^1.0.0",
+    "glob": "^7.1.2",
+    "path": "^0.12.7",
+    "serverless": "^1.24.1",
+    "serverless-webpack": "^4.0.0",
+    "typescript": "^2.6.1",
+    "webpack": "^3.8.1"
+  }
+}
