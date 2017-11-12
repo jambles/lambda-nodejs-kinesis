@@ -18,9 +18,9 @@ plugins:
 
 resources:
   Resources:
-    genericHistoryTable:
+    kinesisConsumerTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         TableName: ${self:provider.environment.kinesisConsumerTable}-${self:provider.stage}
         AttributeDefinitions:
@@ -35,7 +35,7 @@ resources:
     DynamoDBIamPolicy:
       Type: AWS::IAM::Policy
       DependsOn:
-        - genericHistoryTable
+        - kinesisConsumerTable
       Properties:
         PolicyName: lambda-${self:service}-${self:provider.stage}-dynamodb
         PolicyDocument:
