@@ -5,6 +5,8 @@ const consumerTable = `${process.env.kinesisConsumerTable}-${process.env.ENV}`;
 const dynamo = new DynamoHelper(consumerTable);
 
 export async function consume(event: IEventPayload, context: {}, callback: IConsumerCallback) {
+    console.log("Consuming", event.Records.length, " events");
+
     await event.Records.forEach((record) => {
         const payload = new Buffer(record.kinesis.data, 'base64').toString('ascii');
         return saveItem(new KinesisRecordEntity(record.eventID, payload))
